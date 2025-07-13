@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🛒 Lista de Promoções</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      .social-btn {
+        width: 200px;
+        justify-content: center;
+      }
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 40px 0;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #2c3e50;
+      text-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #2c3e50, #3498db);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      color: #7f8c8d;
+      font-size: 1.2rem;
+      font-weight: 300;
+      margin-bottom: 20px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .sort-btn {
+      background: rgba(255,255,255,0.9);
+      border: 2px solid #ddd;
+      padding: 10px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      color: #7f8c8d;
+    }
+
+    .sort-btn.active {
+      background: linear-gradient(45deg, #3498db, #2980b9);
+      color: white;
+      border-color: #3498db;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    }
+
+    .sort-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .social-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .social-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .social-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .btn-facebook {
+      background: linear-gradient(45deg, #4267B2, #365899);
+      color: white;
+    }
+
+    .btn-whatsapp {
+      background: linear-gradient(45deg, #25D366, #128C7E);
+      color: white;
+    }
+
+    .cupons-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 30px;
+    }
+
+    .cupom {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cupom::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+      border-radius: 20px 20px 0 0;
+    }
+
+    .cupom:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+    }
+
+    .cupom-content {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .cupom-image {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .cupom img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      transition: transform 0.3s ease;
+    }
+
+    .cupom:hover img {
+      transform: scale(1.05);
+    }
+
+    .cupom-info {
+      flex-grow: 1;
+    }
+
+    .cupom-info h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .cupom-info p {
+      color: #7f8c8d;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+
+    .like-section {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .like-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.5rem;
+      transition: all 0.3s ease;
+      padding: 8px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .like-btn:hover {
+      transform: scale(1.1);
+      background: rgba(255,107,107,0.1);
+    }
+
+    .like-btn.liked {
+      animation: heartbeat 0.6s ease-in-out;
+    }
+
+    .like-count {
+      color: #7f8c8d;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .destaque-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: linear-gradient(45deg, #f39c12, #e67e22);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 15px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    .cupom-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: linear-gradient(45deg, #feca57, #ff9ff3);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 25px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-promocao {
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      color: white;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .btn-promocao:hover {
+      background: linear-gradient(45deg, #ee5a24, #ff6b6b);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(238, 90, 36, 0.3);
+    }
+
+    .btn-copiar {
+      background: linear-gradient(45deg, #74b9ff, #0984e3);
+      color: white;
+      min-width: 160px;
+      justify-content: center;
+    }
+
+    .btn-copiar:hover {
+      background: linear-gradient(45deg, #0984e3, #74b9ff);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(116, 185, 255, 0.3);
+    }
+
+    .btn-copiar.copiado {
+      background: linear-gradient(45deg, #00b894, #00cec9) !important;
+      animation: pulse 0.6s ease-in-out;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: #7f8c8d;
+      font-size: 1.2rem;
+    }
+
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(127, 140, 141, 0.3);
+      border-radius: 50%;
+      border-top-color: #3498db;
+      animation: spin 1s ease-in-out infinite;
+      margin-left: 10px;
+    }
+
+    .error {
+      text-align: center;
+      padding: 60px;
+      color: #e74c3c;
+      font-size: 1.2rem;
+      background: rgba(255,255,255,0.8);
+      border-radius: 20px;
+      border: 1px solid rgba(231, 76, 60, 0.2);
+    }
+
+    .loading-more {
+      text-align: center;
+      padding: 40px;
+      color: #7f8c8d;
+      font-size: 1rem;
+      display: none;
+    }
+
+    .loading-more.active {
+      display: block;
+    }
+
+    .loading-more::after {
+      content: '';
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(127, 140, 141, 0.3);
+      border-radius: 50%;
+      border-top-color: #3498db;
+      animation: spin 1s ease-in-out infinite;
+      margin-left: 10px;
+    }
+
+    .end-message {
+      text-align: center;
+      padding: 40px;
+      color: #7f8c8d;
+      font-size: 1rem;
+      font-style: italic;
+      display: none;
+    }
+
+    .end-message.active {
+      display: block;
+    }
+
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      14% { transform: scale(1.3); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.3); }
+      70% { transform: scale(1); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes glow {
+      from { box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+      to { box-shadow: 0 4px 25px rgba(243, 156, 18, 0.4); }
+    }
+
+    @media (max-width: 768px) {
+      .cupons-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .cupom-content {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .cupom img {
+        width: 100px;
+        height: 100px;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .buttons {
+        justify-content: center;
+      }
+
+      .social-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .controls {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .sort-btn {
+        width: 200px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🛒 Promoções Recentes</h1>
+    <p>Encontre as melhores ofertas e cupons de desconto</p>
+    
+    <div class="social-buttons">
+      <a href="https://www.facebook.com/MarombaSuplePromo" target="_blank" class="social-btn btn-facebook">
+        📘 Facebook
+      </a>
+      <a href="https://chat.whatsapp.com/HK1oIbpwvMxGf1wLfNeSFK" target="_blank" class="social-btn btn-whatsapp">
+        📱 WhatsApp
+      </a>
+    </div>
+
+    <div class="controls">
+      <button class="sort-btn active" onclick="sortCupons('newest')">🕐 Mais Recentes</button>
+      <button class="sort-btn" onclick="sortCupons('oldest')">📅 Mais Antigos</button>
+      <button class="sort-btn" onclick="sortCupons('likes')">❤️ Mais Curtidos</button>
+    </div>
+  </div>
+  
+  <div class="cupons-container" id="cupons">
+    <div class="loading">Carregando cupons incríveis...</div>
+  </div>
+  
+  <div class="loading-more" id="loadingMore">
+    Carregando mais cupons...
+  </div>
+  
+  <div class="end-message" id="endMessage">
+    🎉 Você viu todos os cupons disponíveis! Volte mais tarde para novas ofertas.
+  </div>
+
+  <script>
+    let currentPage = 1;
+    let isLoading = false;
+    let hasMorePages = true;
+    let allCupons = [];
+    let likes = JSON.parse(localStorage.getItem('cupom_likes') || '{}');
+    let currentSort = 'newest';
+
+    // Função para carregar cupons
+    function loadCupons(page = 1) {
+      if (isLoading || !hasMorePages) return;
+      
+      isLoading = true;
+      const loadingMore = document.getElementById('loadingMore');
+      const endMessage = document.getElementById('endMessage');
+      
+      if (page > 1) {
+        loadingMore.classList.add('active');
+      }
+
+      fetch(`/api/cupons?page=${page}&limit=10`)
+        .then(response => response.json())
+        .then(data => {
+          const cupons = data.cupons || data; // Suporte para APIs que retornam array direto ou objeto com propriedade cupons
+          const totalPages = data.totalPages || Math.ceil(data.total / 10) || 1;
+          
+          // Adicionar timestamp se não existir
+          const cuponsWithTimestamp = cupons.map((cupom, index) => ({
+            ...cupom,
+            timestamp: cupom.timestamp || cupom.data_criacao || Date.now() - (index * 1000) // Simula ordem se não tiver timestamp
+          }));
+          
+          if (page === 1) {
+            allCupons = cuponsWithTimestamp;
+            renderCupons(sortCuponsArray(cuponsWithTimestamp));
+          } else {
+            allCupons = [...allCupons, ...cuponsWithTimestamp];
+            appendCupons(cuponsWithTimestamp);
+          }
+          
+          hasMorePages = page < totalPages && cupons.length > 0;
+          
+          if (!hasMorePages) {
+            endMessage.classList.add('active');
+          }
+          
+          currentPage = page;
+          isLoading = false;
+          loadingMore.classList.remove('active');
+        })
+        .catch(error => {
+          console.error('Erro ao carregar cupons:', error);
+          isLoading = false;
+          loadingMore.classList.remove('active');
+          
+          if (page === 1) {
+            document.getElementById('cupons').innerHTML = '<div class="error">❌ Erro ao carregar cupons. Tente novamente mais tarde.</div>';
+          }
+        });
+    }
+
+    // Função para ordenar cupons
+    function sortCuponsArray(cupons) {
+      const sortedCupons = [...cupons];
+      
+      switch(currentSort) {
+        case 'newest':
+          return sortedCupons.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        case 'oldest':
+          return sortedCupons.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+        case 'likes':
+          return sortedCupons.sort((a, b) => {
+            const aLikes = likes[a.id || `cupom_${a.index}`] || 0;
+            const bLikes = likes[b.id || `cupom_${b.index}`] || 0;
+            return bLikes - aLikes;
+          });
+        default:
+          return sortedCupons;
+      }
+    }
+
+    // Função para alterar ordenação
+    function sortCupons(sortType) {
+      currentSort = sortType;
+      
+      // Atualizar botões ativos
+      document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // Reordenar cupons existentes
+      const sortedCupons = sortCuponsArray(allCupons);
+      renderCupons(sortedCupons);
+    }
+    function renderCupons(cupons) {
+      const container = document.getElementById('cupons');
+      container.innerHTML = cupons.map(renderCupomCard).join('');
+    }
+
+    // Função para adicionar cupons (scroll infinito)
+    function appendCupons(cupons) {
+      const container = document.getElementById('cupons');
+      container.insertAdjacentHTML('beforeend', cupons.map(renderCupomCard).join(''));
+    }
+
+    // Função para renderizar um card de cupom
+    function renderCupomCard(c, index) {
+      const cupomId = c.id || `cupom_${currentPage}_${index}`;
+      const imagem = c.imagem || 'https://via.placeholder.com/160x160/667eea/ffffff?text=Oferta';
+      const likeCount = likes[cupomId] || 0;
+      const isDestaque = c.destaque || likeCount >= 5;
+      
+      return `
+        <div class="cupom">
+          ${isDestaque ? '<div class="destaque-badge">⭐ Destaque</div>' : '<div class="cupom-badge">Oferta</div>'}
+          <div class="cupom-content">
+            <div class="cupom-image">
+              <img src="${imagem}" alt="Produto">
+            </div>
+            <div class="cupom-info">
+              <h2>${c.titulo}</h2>
+              <p>${c.descricao}</p>
+              <div class="like-section">
+                <button class="like-btn" onclick="toggleLike('${cupomId}', this)">
+                  <span class="heart">❤️</span>
+                </button>
+                <span class="like-count" id="count_${cupomId}">${likeCount}</span>
+              </div>
+              <div class="buttons">
+                <button class="btn btn-copiar" onclick="copiarCupom('${c.cupom}', this)">
+                  📋 Copiar Cupom
+                </button>
+                <a class="btn btn-promocao" href="${c.link}" target="_blank">
+                  🔗 Ver Promoção
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Função para alternar like
+    function toggleLike(cupomId, btn) {
+      likes[cupomId] = (likes[cupomId] || 0) + 1;
+      localStorage.setItem('cupom_likes', JSON.stringify(likes));
+      
+      const countElement = document.getElementById(`count_${cupomId}`);
+      countElement.textContent = likes[cupomId];
+      
+      btn.classList.add('liked');
+      setTimeout(() => btn.classList.remove('liked'), 600);
+      
+      // Verificar se deve virar destaque
+      if (likes[cupomId] >= 5) {
+        const cupomElement = btn.closest('.cupom');
+        const badge = cupomElement.querySelector('.cupom-badge');
+        if (badge && !cupomElement.querySelector('.destaque-badge')) {
+          badge.outerHTML = '<div class="destaque-badge">⭐ Destaque</div>';
+        }
+      }
+    }
+
+    // Função para copiar cupom
+    function copiarCupom(cupom, btn) {
+      navigator.clipboard.writeText(cupom).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✅ Copiado!';
+        btn.classList.add('copiado');
+        
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('copiado');
+        }, 2000);
+      }).catch(() => {
+        // Fallback para browsers que não suportam clipboard API
+        const textArea = document.createElement('textarea');
+        textArea.value = cupom;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✅ Copiado!';
+        btn.classList.add('copiado');
+        
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('copiado');
+        }, 2000);
+      });
+    }
+
+    // Scroll infinito
+    function handleScroll() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      
+      // Carregar mais quando estiver próximo do final (200px antes)
+      if (scrollTop + windowHeight >= documentHeight - 200) {
+        if (!isLoading && hasMorePages) {
+          loadCupons(currentPage + 1);
+        }
+      }
+    }
+
+    // Event listeners
+    window.addEventListener('scroll', handleScroll);
+    
+    // Carregamento inicial
+    loadCupons(1);
+  </script>
+</body>
+</html>
