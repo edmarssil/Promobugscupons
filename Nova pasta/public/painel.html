@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Cadastro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 40px 20px;
+    }
+    .form-container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    form input, form textarea {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    form button {
+      width: 100%;
+      padding: 12px;
+      background: #28a745;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    form button:hover {
+      background: #218838;
+    }
+    #resposta {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>📥 Cadastro de Cupons</h1>
+    <form id="cupom-form">
+      <input type="text" name="imagem" placeholder="🔗 Link da imagem do produto" required>
+      <input type="text" name="titulo" placeholder="📝 Título da promoção" required>
+      <textarea name="descricao" placeholder="📄 Descrição" required></textarea>
+      <input type="text" name="link" placeholder="🔗 Link de afiliado" required>
+      <input type="text" name="cupom" placeholder="🎟️ Código do cupom" required>
+      <button type="submit">Salvar</button>
+    </form>
+    <p id="resposta"></p>
+  </div>
+
+  <script>
+    const form = document.getElementById('cupom-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const dados = Object.fromEntries(formData.entries());
+
+      const res = await fetch('/api/adicionar-cupom', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      });
+
+      const resultado = await res.json();
+      document.getElementById('resposta').innerText = resultado.mensagem || resultado.error;
+      if (res.ok) form.reset();
+    });
+  </script>
+</body>
+</html>

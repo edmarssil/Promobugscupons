@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>🛍️ Promoções Ativas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 20px;
+    }
+    .cupons-container {
+      max-width: 800px;
+      margin: auto;
+    }
+    .cupom {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid #e0e0e0;
+    }
+    .cupom img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .cupom-info {
+      padding: 15px;
+      flex: 1;
+    }
+    .cupom-info h2 {
+      margin: 0 0 8px;
+      font-size: 1.1em;
+      color: #333;
+    }
+    .cupom-info p {
+      margin: 4px 0;
+      color: #555;
+      font-size: 0.95em;
+    }
+    .buttons {
+      margin-top: 10px;
+    }
+    .btn {
+      padding: 6px 14px;
+      margin-right: 6px;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.9em;
+      cursor: pointer;
+      display: inline-block;
+      text-decoration: none;
+    }
+    .btn-promocao {
+      background: #007bff;
+      color: #fff;
+    }
+    .btn-copiar {
+      background: #6c757d;
+      color: #fff;
+    }
+    .btn-copiar.copiado {
+      background: #28a745 !important;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="text-align:center">🛍️ Promoções Ativas</h1>
+  <div id="cupons" class="cupons-container">Carregando cupons...</div>
+
+  <script>
+    fetch('/api/cupons')
+      .then(r => r.json())
+      .then(c => {
+        const cont = document.getElementById('cupons');
+        cont.innerHTML = c.map(item => {
+          const img = item.imagem || 'https://via.placeholder.com/120?text=Sem+Imagem';
+          return `
+            <div class="cupom">
+              <img src="${img}" alt="Produto">
+              <div class="cupom-info">
+                <h2>${item.titulo}</h2>
+                <p>${item.descricao}</p>
+                <div class="buttons">
+                  <button class="btn btn-copiar" onclick="copiarCupom('${item.cupom}', this)">📋 Copiar Cupom</button>
+                  <a class="btn btn-promocao" href="${item.link}" target="_blank">🔗 Ver Promoção</a>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      })
+      .catch(() => {
+        document.getElementById('cupons').innerHTML = '<p style="text-align:center; color:red">Erro ao carregar cupons.</p>';
+      });
+
+    function copiarCupom(cupom, btn) {
+      navigator.clipboard.writeText(cupom).then(() => {
+        btn.innerText = '✅ Copiado!';
+        btn.classList.add('copiado');
+        setTimeout(() => {
+          btn.innerText = '📋 Copiar Cupom';
+          btn.classList.remove('copiado');
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
